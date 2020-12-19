@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FUPA", "FUPA.csproj", "{B6C37042-2D04-4497-8CE3-61F256F215EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6C37042-2D04-4497-8CE3-61F256F215EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6C37042-2D04-4497-8CE3-61F256F215EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6C37042-2D04-4497-8CE3-61F256F215EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6C37042-2D04-4497-8CE3-61F256F215EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
