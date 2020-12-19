@@ -2,6 +2,8 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp;
@@ -38,7 +40,7 @@ namespace FUPA
             var builtVersion = (await "https://vgmstream-builds.s3-us-west-1.amazonaws.com/latest_ver".GetStringAsync()).Trim();
             Console.WriteLine(builtVersion);
             
-            if (fbVersion !=  builtVersion)
+            if (fbVersion != builtVersion)
             {
                 Console.WriteLine("Versions don't match! Calling FUPA.");
                 await DoFupa();
@@ -46,6 +48,11 @@ namespace FUPA
             else
             {
                 Console.WriteLine("Versions match! Doing nothing.");
+                if ((string) _envDic["COMPONENT_SHORT_NAME"] == "foo_fupatest")
+                {
+                    Console.WriteLine("But we're debugging, so let's do it anyway");
+                    await DoFupa();
+                }
             }
 
         }
@@ -55,7 +62,7 @@ namespace FUPA
             var ok = new GitHubClient(new ProductHeaderValue("FUPA"));
 
             var crOp = new ChromeOptions();
-            crOp.AddArguments("headless");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) crOp.AddArguments("headless");
             var webDriver = new ChromeDriver(crOp);
 
             webDriver.Url = $"https://{_envDic["HTTP_USER"]}:{_envDic["HTTP_PASS"]}@foobar2000.org/componentsadmin";
@@ -92,9 +99,26 @@ namespace FUPA
             var fldChangelog = webDriver.FindElementByName("release_info");
             var fldRequired = webDriver.FindElementByName("required_version");
 
+            var sb = new StringBuilder();
+
+            sb.AppendLine("* This release is automated.");
+            sb.AppendLine();
+            sb.AppendLine($@"* Built from commit {lastBuild.LatestCommitData.Sha}:");
+            var lines = lastBuild.LatestCommitData.Commit.Message.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+            foreach (var line in lines)
+            {
+                sb.AppendLine($"  * {line}");
+            }
+            
+            sb.AppendLine($"* {lastBuild.LatestCommitData.HtmlUrl}");
+            sb.AppendLine($@"* Authored by {lastBuild.LatestCommitData.Author.Login} on {lastBuild.LatestCommitData.Commit.Author.Date:R}");
+            
             fldVersion.SendKeys(lastVer.Trim());
             fldFile.SendKeys(dl);
-            fldChangelog.SendKeys(lastBuild.LatestCommitData.Commit.Message);
+            fldChangelog.SendKeys(sb.ToString());
             fldRequired.SendKeys("1.3");
 
             Console.WriteLine("Uploading update...");
