@@ -10,7 +10,6 @@ using AngleSharp;
 using dotenv.net;
 using Flurl.Http;
 using Octokit;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace FUPA
