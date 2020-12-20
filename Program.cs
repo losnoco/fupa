@@ -125,6 +125,8 @@ namespace FUPA
 
             var btnAddRel = webDriver.FindElementByCssSelector("[type='submit'][value='Add release']");
             btnAddRel.Click();
+            
+            webDriver.Close();
 
             Console.WriteLine("Done!");
         }
