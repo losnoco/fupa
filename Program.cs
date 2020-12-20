@@ -24,7 +24,7 @@ namespace FUPA
             
             _envDic = Environment.GetEnvironmentVariables();
 
-            var pattern = @"Current version: (r\d*-\d*-.*),";
+            /*var pattern = @"Current version: (r\d*-\d*-.*),";
             
             var config = Configuration.Default;
             var context = BrowsingContext.New(config);
@@ -52,7 +52,8 @@ namespace FUPA
                     Console.WriteLine("But we're debugging, so let's do it anyway");
                     await DoFupa();
                 }
-            }
+            }*/
+            await DoFupa();
 
         }
 
@@ -84,12 +85,12 @@ namespace FUPA
 
             Console.WriteLine("Getting latest commit...");
             var lastCommit = await ok.Repository.Commit.Get("vgmstream", "vgmstream", "HEAD");
-            var lastBuild = await "https://vgmstream-builds.losno.co/latestdata".GetJsonAsync<VGB.VgbLatestData>();
+            //var lastBuild = await "https://vgmstream-builds.losno.co/latestdata".GetJsonAsync<VGB.VgbLatestData>();
             var lastVer = await "https://vgmstream-builds.s3-us-west-1.amazonaws.com/latest_ver".GetStringAsync();
-            Console.WriteLine($"Downloading build {lastBuild.LatestCommitData.Sha}...");
+            Console.WriteLine($"Downloading build {lastCommit.Sha}...");
             var dl =
                 await
-                    $"https://vgmstream-builds.s3-us-west-1.amazonaws.com/{lastBuild.LatestCommitData.Sha}/windows/foo_input_vgmstream.fb2k-component"
+                    $"https://vgmstream-builds.s3-us-west-1.amazonaws.com/{lastCommit.Sha}/windows/foo_input_vgmstream.fb2k-component"
                         .DownloadFileAsync(Path.GetTempPath());
             Console.WriteLine("Filling form...");
 
@@ -102,8 +103,8 @@ namespace FUPA
 
             sb.AppendLine("* This release is automated.");
             sb.AppendLine();
-            sb.AppendLine($@"* Built from commit {lastBuild.LatestCommitData.Sha}:");
-            var lines = lastBuild.LatestCommitData.Commit.Message.Split(
+            sb.AppendLine($@"* Built from commit {lastCommit.Sha}:");
+            var lines = lastCommit.Commit.Message.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None
             );
@@ -112,8 +113,8 @@ namespace FUPA
                 sb.AppendLine($"  * {line}");
             }
             
-            sb.AppendLine($"* {lastBuild.LatestCommitData.HtmlUrl}");
-            sb.AppendLine($@"* Authored by {lastBuild.LatestCommitData.Author.Login} on {lastBuild.LatestCommitData.Commit.Author.Date:R}");
+            sb.AppendLine($"* {lastCommit.HtmlUrl}");
+            sb.AppendLine($@"* Authored by {lastCommit.Author.Login} on {lastCommit.Commit.Author.Date:R}");
             
             fldVersion.SendKeys(lastVer.Trim());
             fldFile.SendKeys(dl);
