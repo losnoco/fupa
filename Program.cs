@@ -20,7 +20,7 @@ namespace FUPA
         static async Task Main(string[] args)
         {
             
-            DotEnv.Config();
+            DotEnv.Load();
             
             _envDic = Environment.GetEnvironmentVariables();
 
@@ -63,9 +63,10 @@ namespace FUPA
 
             var crOp = new ChromeOptions();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) crOp.AddArguments("headless");
+            crOp.AddArgument("--disable-blink-features=\"BlockCredentialedSubresources\"");
             var webDriver = new ChromeDriver(crOp);
 
-            webDriver.Url = $"https://{_envDic["HTTP_USER"]}:{_envDic["HTTP_PASS"]}@foobar2000.org/componentsadmin";
+            webDriver.Navigate().GoToUrl($"https://{_envDic["HTTP_USER"]}:{_envDic["HTTP_PASS"]}@www.foobar2000.org/componentsadmin");
             Console.WriteLine("Opening a `web browser´");
 
             var fldUser = webDriver.FindElementByName("name");
